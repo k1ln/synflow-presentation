@@ -1,0 +1,44 @@
+{
+  "generator":"osc_bench.cpp v3",
+  "compiler":"clang++ -O3 -march=native",
+  "arch":"arm64",
+  "bufferSize":128,
+  "sampleRate":44100,
+  "budgetMs":2.902494,
+  "voiceCounts":[100,250,500,1000,2500,5000,10000,20000,50000],
+  "results":{
+    "sinf":      [
+    {"voices":100,"ms":0.020959,"over":false},
+    {"voices":250,"ms":0.048240,"over":false},
+    {"voices":500,"ms":0.096737,"over":false},
+    {"voices":1000,"ms":0.195329,"over":false},
+    {"voices":2500,"ms":0.485790,"over":false},
+    {"voices":5000,"ms":0.976453,"over":false},
+    {"voices":10000,"ms":1.935344,"over":false},
+    {"voices":20000,"ms":3.887088,"over":true},
+    {"voices":50000,"ms":9.808269,"over":true}
+  ],
+    "wavetable": [
+    {"voices":100,"ms":0.003930,"over":false},
+    {"voices":250,"ms":0.009990,"over":false},
+    {"voices":500,"ms":0.020363,"over":false},
+    {"voices":1000,"ms":0.039732,"over":false},
+    {"voices":2500,"ms":0.098032,"over":false},
+    {"voices":5000,"ms":0.202711,"over":false},
+    {"voices":10000,"ms":0.383091,"over":false},
+    {"voices":20000,"ms":0.791665,"over":false},
+    {"voices":50000,"ms":1.981190,"over":false}
+  ],
+    "neon":      [
+    {"voices":100,"ms":0.003647,"over":false},
+    {"voices":250,"ms":0.009408,"over":false},
+    {"voices":500,"ms":0.018214,"over":false},
+    {"voices":1000,"ms":0.037565,"over":false},
+    {"voices":2500,"ms":0.091951,"over":false},
+    {"voices":5000,"ms":0.184376,"over":false},
+    {"voices":10000,"ms":0.363816,"over":false},
+    {"voices":20000,"ms":0.735353,"over":false},
+    {"voices":50000,"ms":1.872575,"over":false}
+  ]
+  }
+}

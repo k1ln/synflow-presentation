@@ -1,0 +1,1067 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modular Synth in the browser.</title>
+
+    <!-- Reveal.js core + theme -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/white.css"
+      id="theme"
+    />
+
+    <!-- Optional: code highlighting theme for later slides -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css"
+    />
+
+    <link rel="stylesheet" href="./theme.css" />
+    <!-- Pre-generated benchmark data. Run: node benchmark/run.js to refresh. -->
+    <script src="benchmark/results.js"></script>
+  </head>
+  <body>
+    <!-- SF corner logo — fixed on every slide -->
+    <div class="sf-corner">███████╗███████╗
+██╔════╝██╔════╝
+███████╗█████╗  
+╚════██║██╔══╝  
+███████║██║     
+╚══════╝╚═╝     </div>
+    <div class="reveal">
+      <div class="slides">
+        <!-- Slide 1: Title -->
+        <section>
+            <center>
+          <div class="hero-pill">███████╗██╗   ██╗███╗   ██╗███████╗██╗      ██████╗ ██╗    ██╗
+██╔════╝╚██╗ ██╔╝████╗  ██║██╔════╝██║     ██╔═══██╗██║    ██║
+███████╗ ╚████╔╝ ██╔██╗ ██║█████╗  ██║     ██║   ██║██║ █╗ ██║
+╚════██║  ╚██╔╝  ██║╚██╗██║██╔══╝  ██║     ██║   ██║██║███╗██║
+███████║   ██║   ██║ ╚████║██║     ███████╗╚██████╔╝╚███╔███╔╝
+╚══════╝   ╚═╝   ╚═╝  ╚═══╝╚═╝     ╚══════╝ ╚═════╝  ╚══╝╚══╝</div>
+          <h1>MODULAR SYNTH IN THE BROWSER</h1>
+          </center>
+        </section>
+
+        <!-- Slide: The problem — why I built it -->
+        <section>
+          <h2>The gap I needed to fill</h2>
+          <div class="synflow-quote">
+            “I wanted a playground where I could implement programming and flow ideas at a very fast
+            pace — and I simply couldn’t find myself in any of the existing frameworks.”
+          </div>
+          <p style="font-size:0.65em;color:var(--muted);margin-top:0.5em;">
+            Existing tools are already very good and sophisticated but too low-level. <br>I wanted a middle ground.
+          </p>
+          <div class="barrier-grid">
+            <div class="barrier-item">
+              <div class="barrier-name">Max/MSP &amp; Pure Data</div>
+              <span class="barrier-tag">Visual node graph</span>
+              <div class="barrier-issue"><b>!</b> Desktop only &middot; legacy UX &middot; high learning barrier</div>
+            </div>
+            <div class="barrier-item">
+              <div class="barrier-name">SuperCollider</div>
+              <span class="barrier-tag">Code-based DSP language</span>
+              <div class="barrier-issue"><b>!</b> Desktop Only &middot; Steep language learning curve &middot; no visual editor &middot;</div>
+            </div>
+            <div class="barrier-item">
+              <div class="barrier-name">VCV Rack</div>
+              <span class="barrier-tag">Eurorack simulation</span>
+              <div class="barrier-issue"><b>!</b> Desktop only &middot; install required &middot; C++ module authoring barrier</div>
+            </div>
+            <div class="barrier-item">
+              <div class="barrier-name">FAUST</div>
+              <span class="barrier-tag">Functional DSP language → compiled</span>
+              <div class="barrier-issue"><b>!</b> Custom language &middot; compilation step &middot; no visual graph</div>
+            </div>
+            <div class="barrier-item">
+              <div class="barrier-name">Web Audio API (raw)</div>
+              <span class="barrier-tag">Native browser API</span>
+              <div class="barrier-issue"><b>!</b> No visual editor &middot; every connection is imperative JS &middot; tedious to prototype</div>
+            </div>
+            <div class="barrier-item">
+              <div class="barrier-name">Tone.js &amp; similar libs</div>
+              <span class="barrier-tag">JS audio library</span>
+              <div class="barrier-issue"><b>!</b> Code-only &middot; no visual graph &middot; still requires a build setup</div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>Synflow: the playground I built</h2>
+          <p style="font-size:0.65em;color:var(--muted);margin-bottom:0.5em;">
+            A browser-native, node-graph workstation for building audio, MIDI, and control flows.
+            No install. No compile step. Most modules use native Browser implementations. 
+          </p>
+          <div class="synflow-pillars">
+            <div class="pillar">
+              <span class="pillar-icon">0</span>
+              <span class="pillar-label">Zero barrier</span><br>
+              <span class="pillar-desc">Runs in any modern browser. 
+                <br>No install  
+                <br>No account
+                <br>No compile step</span>
+            </div>
+            <div class="pillar">
+              <span class="pillar-icon">&gt;--&lt;</span>
+              <span class="pillar-label">Visual &amp; wirable</span>
+              <span class="pillar-desc">Node graph powered by React Flow. <br>Patch like Eurorack <br> knobs like Eurorack</span>
+            </div>
+            <div class="pillar">
+              <span class="pillar-icon">&gt;&gt;</span>
+              <span class="pillar-label">Fast iteration</span>
+              <span class="pillar-desc"><br>Add a node -&gt; wire it -&gt; hear it <br>No project overhead.</span>
+            </div>
+            <div class="pillar">
+              <span class="pillar-icon">[?]</span>
+              <span class="pillar-label">Independant Nodes</span>
+              <span class="pillar-desc">Every node has docs. Inputs, Outputs connect seamlessly to other nodes.</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Slide: Technology stack -->
+        <section>
+          <h2>The technology stack</h2>
+          <p style="font-size:0.6em;color:var(--muted);margin-bottom:0.6em;">
+            Four layers — each chosen because it does one thing well and stays out of the others' way.
+          </p>
+          <div class="stack-grid">
+
+            <div class="stack-layer">
+              <div class="stack-badge">[W3C]</div>
+              <div class="stack-name">Web Audio API</div>
+              <div class="stack-role">Real-time audio graph — browser engine</div>
+              <ul class="stack-points">
+                <li>Nodes connected into a directed acyclic graph</li>
+                <li>C++ render thread: OscillatorNode, BiquadFilterNode, GainNode, ConvolverNode&hellip;</li>
+                <li>AudioWorklet: custom DSP in a high-priority JS thread</li>
+              </ul>
+              <div class="stack-tag">browser native &middot; zero install &middot; SIMD-accelerated</div>
+            </div>
+
+            <div class="stack-layer">
+              <div class="stack-badge">[RF]</div>
+              <div class="stack-name">React Flow (XYFlow)</div>
+              <div class="stack-role">Visual node graph — UI layer</div>
+              <ul class="stack-points">
+                <li>Every Synflow module is a React Flow node with typed ports</li>
+                <li>Edges = signal wires; drag-to-connect fires graph events</li>
+                <li>Custom node components: knobs, waveform previews, ADSR editors</li>
+              </ul>
+              <div class="stack-tag">React 18 &middot; XYFlow v12</div>
+            </div>
+
+            <div class="stack-layer">
+              <div class="stack-badge">[EB]</div>
+              <div class="stack-name">Custom EventBus</div>
+              <div class="stack-role">Cross-node messaging -- control plane</div>
+              <ul class="stack-points">
+                <li>Typed publish / subscribe across any two nodes</li>
+                <li>Independant from React or Audio Engine</li>
+                <li>MIDI, clock ticks, gate signals, CC values -- all routed as events</li>
+                <li>Extremely easy implementation</li>
+                <li>No Redux, no Zustand -- intentionally minimal</li>
+              </ul>
+              <div class="stack-tag">zero deps &middot; synchronous &middot; inspectable at runtime </div>
+            </div>
+
+            <div class="stack-layer">
+              <div class="stack-badge">[AG]</div>
+              <div class="stack-name">Audio Graph Manager</div>
+              <div class="stack-role">Glue engine -- keeps RF and Web Audio in sync</div>
+              <ul class="stack-points">
+                <li>Translates RF edge add/remove into AudioNode.connect / disconnect</li>
+                <li>Owns the AudioContext lifecycle (suspend, resume, sample rate)</li>
+                <li>Node registry: maps each RF node type to its Web Audio factory</li>
+                <li>Hot-swap parameters without tearing down the graph</li>
+              </ul>
+              <div class="stack-tag">singleton &middot; runs on main thread &middot; drives both planes</div>
+            </div>
+
+          </div>
+          <aside class="notes">This is the architectural core slide. The key insight: React Flow owns the *visual* graph, Web Audio owns the *audio* graph, and the Audio Graph Manager keeps them in sync. The EventBus is the third bus — it carries non-audio signals (MIDI, clock, gate) that don't belong in either graph. These four pieces compose cleanly because each has a single clear job.</aside>
+        </section>
+
+        <!-- Slide: Architecture flow diagram -->
+        <section>
+          <h2>Architecture: how the layers communicate</h2>
+          <p style="font-size:0.58em;color:var(--muted);margin-bottom:0.55em;">
+            UI never touches Web Audio directly. All control messages cross the EventBus.
+            Audio signals stay inside the Audio Graph Manager.
+          </p>
+
+          <div class="arch-diagram">
+
+            <!-- LEFT: UI -->
+            <div class="arch-col arch-col-ui">
+              <div class="arch-col-title">[UI]</div>
+              <div class="arch-col-sub">React + React Flow</div>
+              <div class="arch-box">
+                <div class="arch-box-label">Node canvas</div>
+                <div class="arch-box-detail">drag &middot; wire &middot; resize</div>
+              </div>
+              <div class="arch-box">
+                <div class="arch-box-label">Param controls</div>
+                <div class="arch-box-detail">knobs &middot; sliders &middot; toggles</div>
+              </div>
+              <div class="arch-box">
+                <div class="arch-box-label">MIDI input</div>
+                <div class="arch-box-detail">note &middot; CC &middot; clock</div>
+              </div>
+              <div class="arch-box">
+                <div class="arch-box-label">Step sequencer</div>
+                <div class="arch-box-detail">gate &middot; freq &middot; velocity</div>
+              </div>
+            </div>
+
+            <!-- MIDDLE: EventBus -->
+            <div class="arch-col arch-col-bus">
+              <div class="arch-col-title">[EB]</div>
+              <div class="arch-col-sub">EventBus</div>
+
+              
+              <div class="arch-bus-wire">
+                <div class="arch-bus-msg">param:set</div>
+                <div class="arch-bus-arrow">&mdash;&mdash;&mdash;&gt;</div>
+              </div>
+              <div class="arch-bus-wire">
+                <div class="arch-bus-msg">midi:note</div>
+                <div class="arch-bus-arrow">&mdash;&mdash;&mdash;&gt;</div>
+              </div>
+              <div class="arch-bus-wire">
+                <div class="arch-bus-msg">clock:tick</div>
+                <div class="arch-bus-arrow">&mdash;&mdash;&mdash;&gt;</div>
+              </div>
+              <div class="arch-bus-wire">
+                <div class="arch-bus-msg">gate:on / gate:off</div>
+                <div class="arch-bus-arrow">&mdash;&mdash;&mdash;&gt;</div>
+              </div>
+              <div class="arch-bus-wire arch-bus-back">
+                <div class="arch-bus-arrow">&lt;&mdash;&mdash;&mdash;</div>
+                <div class="arch-bus-msg arch-bus-msg-back">meter:level</div>
+              </div>
+              <div class="arch-bus-wire arch-bus-back">
+                <div class="arch-bus-arrow">&lt;&mdash;&mdash;&mdash;</div>
+                <div class="arch-bus-msg arch-bus-msg-back">analyser:data</div>
+              </div>
+
+              <div class="arch-bus-note">publish / subscribe<br>typed &middot; synchronous<br>no external deps</div>
+            </div>
+
+            <!-- RIGHT: Audio Graph Manager + Web Audio API -->
+            <div class="arch-col arch-col-agm">
+              <div class="arch-col-title">[AG]</div>
+              <div class="arch-col-sub">Audio Graph Manager</div>
+
+              <div class="arch-box">
+                <div class="arch-box-label">Node registry</div>
+                <div class="arch-box-detail">RF type &rarr; AudioNode factory</div>
+              </div>
+              <div class="arch-box">
+                <div class="arch-box-label">connect / disconnect</div>
+                <div class="arch-box-detail">mirrors RF edge changes</div>
+              </div>
+              <div class="arch-box">
+                <div class="arch-box-label">AudioContext owner</div>
+                <div class="arch-box-detail">suspend &middot; resume &middot; sample rate</div>
+              </div>
+
+              <!-- Web Audio API inner box -->
+              <div class="arch-waa">
+                <div class="arch-waa-title">[W3C] Web Audio API</div>
+                <div class="arch-waa-inner">
+                  <div class="arch-signal-row">
+                    <span class="arch-node-pill">OscillatorNode</span>
+                    <span class="arch-sig-arrow">~&gt;</span>
+                    <span class="arch-node-pill">GainNode</span>
+                    <span class="arch-sig-arrow">~&gt;</span>
+                    <span class="arch-node-pill">BiquadFilter</span>
+                  </div>
+                  <div class="arch-signal-row" style="margin-top:5px">
+                    <span class="arch-node-pill">AudioWorklet</span>
+                    <span class="arch-sig-arrow">~&gt;</span>
+                    <span class="arch-node-pill">ConvolverNode</span>
+                    <span class="arch-sig-arrow">~&gt;</span>
+                    <span class="arch-node-pill">Destination</span>
+                  </div>
+                  <div class="arch-sig-label">audio signals routed internally &mdash; C++ render thread</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <aside class="notes">The key separation: the UI never calls AudioNode.connect directly. It publishes an event. The Audio Graph Manager subscribes, resolves the node references from its registry, and performs the actual Web Audio mutation. This means you can inspect or replay the entire control history as an event log, independent of audio state.</aside>
+        </section>
+
+        <!-- Slide: What is Synflow -->
+        
+
+        <!-- ═══ SYNFLOW CAPABILITIES ══════════════════════════════════ -->
+        <section>
+
+          <!-- Sub-slide A: Node palette overview -->
+          <section>
+            <h2>The node palette — 35+ nodes, 5 families</h2>
+            <div class="node-grid">
+              <!-- Sources -->
+              <div class="node-category">
+                <div class="node-cat-title src">Sources</div>
+                <div class="node-items">
+                  <div class="node-pill">Oscillator <span style="color:#6b7280">(C++ tier)</span></div>
+                  <div class="node-pill">AW Oscillator <span style="color:#6b7280">(custom)</span></div>
+                  <div class="node-pill">Noise <span style="color:#6b7280">white·pink·brown·blue·violet·gray</span></div>
+                  <div class="node-pill">Sample <span style="color:#6b7280">multi-seg, auto-repitch</span></div>
+                  <div class="node-pill">Microphone <span style="color:#6b7280">line-in / mic</span></div>
+                  <div class="node-pill">AudioWorklet <span style="color:#6b7280">custom DSP</span></div>
+                </div>
+              </div>
+              <!-- Effects -->
+              <div class="node-category">
+                <div class="node-cat-title fx">Effects</div>
+                <div class="node-items">
+                  <div class="node-pill">Gain</div>
+                  <div class="node-pill">Biquad Filter <span style="color:#6b7280">8 modes</span></div>
+                  <div class="node-pill">IIR Filter <span style="color:#6b7280">custom coefficients</span></div>
+                  <div class="node-pill">Delay</div>
+                  <div class="node-pill">Reverb <span style="color:#6b7280">convolution IR</span></div>
+                  <div class="node-pill">Distortion <span style="color:#6b7280">11 presets</span></div>
+                  <div class="node-pill">Compressor</div>
+                  <div class="node-pill">Equalizer</div>
+                  <div class="node-pill">Vocoder <span style="color:#6b7280">carrier + modulator</span></div>
+                  <div class="node-pill">Freq Shifter</div>
+                  <div class="node-pill">Convolver <span style="color:#6b7280">ext. IR files</span></div>
+                </div>
+              </div>
+              <!-- Control -->
+              <div class="node-category">
+                <div class="node-cat-title ctrl">[-] Control</div>
+                <div class="node-items">
+                  <div class="node-pill">ADSR Envelope</div>
+                  <div class="node-pill">Automation lane</div>
+                  <div class="node-pill">Clock <span style="color:#6b7280">BPM tap</span></div>
+                  <div class="node-pill">MIDI Knob <span style="color:#6b7280">CC learn</span></div>
+                  <div class="node-pill">Frequency <span style="color:#6b7280">note→Hz</span></div>
+                  <div class="node-pill">Constant <span style="color:#6b7280">fixed value</span></div>
+                  <div class="node-pill">Oscilloscope</div>
+                  <div class="node-pill">Analyzer <span style="color:#6b7280">spectrum</span></div>
+                  <div class="node-pill">Recording <span style="color:#6b7280">toggle/hold</span></div>
+                  <div class="node-pill">Master Out</div>
+                </div>
+              </div>
+              <!-- Sequencing -->
+              <div class="node-category">
+                <div class="node-cat-title seq">[M] MIDI &amp; Seq</div>
+                <div class="node-items">
+                  <div class="node-pill">MIDI Note input</div>
+                  <div class="node-pill">MIDI Button</div>
+                  <div class="node-pill">MIDI File player</div>
+                  <div class="node-pill">Step Sequencer</div>
+                  <div class="node-pill">Freq Sequencer</div>
+                  <div class="node-pill">Arpeggiator</div>
+                  <div class="node-pill">Orchestrator</div>
+                </div>
+              </div>
+              <!-- Routing -->
+              <div class="node-category">
+                <div class="node-cat-title rtg">&gt;&lt; Logic</div>
+                <div class="node-items">
+                  <div class="node-pill">Function <span style="color:#6b7280">JS transform N→M</span></div>
+                  <div class="node-pill">Event <span style="color:#6b7280">EventBus bridge</span></div>
+                  <div class="node-pill">Switch / Blocking</div>
+                  <div class="node-pill">Signal Router <span style="color:#6b7280">1→N</span></div>
+                  <div class="node-pill">Speed Divider</div>
+                  <div class="node-pill">Flow <span style="color:#6b7280">nested sub-graph</span></div>
+                  <div class="node-pill">Input Bus / Output Bus</div>
+                  <div class="node-pill">Log <span style="color:#6b7280">debug console</span></div>
+                </div>
+              </div>
+            </div>
+            <aside class="notes">You don't need to read these out. Gesture at the families: left two columns are audio, middle is control, right two are MIDI/logic. The Function node is the escape hatch — any JS transform you need, you can write inline. Flow nodes let you encapsulate reusable sub-patches.</aside>
+          </section>
+
+          <!-- Sub-slide B: Monosynth patch -->
+          <section>
+            <h2>Example patch: classic monosynth</h2>
+            <p style="font-size:0.6em;color:var(--muted);margin-bottom:0.2em">
+              Plug in a MIDI keyboard. Connect 6 nodes. Done in under 60 seconds.
+            </p>
+            <div class="patch-diagram">
+              <div class="patch-node pn-midi">MIDI Note<span class="pn-note">keyboard / controller</span></div>
+              <div class="patch-arrow">→</div>
+              <div class="patch-node pn-ctrl">Frequency<span class="pn-note">note → Hz</span></div>
+              <div class="patch-arrow">→</div>
+              <div class="patch-node pn-src">Oscillator<span class="pn-note">sawtooth · C++ tier</span></div>
+              <div class="patch-arrow">→</div>
+              <div class="patch-node pn-fx">Biquad Filter<span class="pn-note">low-pass · sweep-able</span></div>
+              <div class="patch-arrow">→</div>
+              <div class="patch-node pn-fx">Gain<span class="pn-note">driven by ADSR</span></div>
+              <div class="patch-arrow">→</div>
+              <div class="patch-node pn-out">Master Out<span class="pn-note">speakers</span></div>
+            </div>
+            <div class="patch-label">With envelope shaping:</div>
+            <div class="patch-diagram" style="background:#f8f2ff;border-color:#c4b5fd">
+              <div class="patch-node pn-midi">MIDI Note<span class="pn-note">gate signal</span></div>
+              <div class="patch-arrow">→</div>
+              <div class="patch-node pn-ctrl">ADSR<span class="pn-note">A·S·D·R</span></div>
+              <div class="patch-arrow">→</div>
+              <div class="patch-node pn-fx">Gain<span class="pn-note">amplitude shaping</span></div>
+              <div style="font-size:0.5em;color:var(--muted);align-self:center;margin-left:4px">↑ replaces static gain above</div>
+            </div>
+            <div class="patch-diagram" style="margin-top:6px;background:#f0fff4;border-color:#86efac">
+              <div class="patch-node pn-ctrl">ADSR<span class="pn-note">slower sweep</span></div>
+              <div class="patch-arrow">→</div>
+              <div class="patch-node pn-fx">Biquad Filter<span class="pn-note">frequency input</span></div>
+              <div style="font-size:0.5em;color:#166534;align-self:center;margin-left:6px">filter sweep = classic synth "wah" effect</div>
+            </div>
+            <aside class="notes">This is the Hello World of modular synthesis. Takes about 45 seconds from blank canvas to hearing a note. Mention: no code, no build, no install. Every wire is a live audio connection.</aside>
+          </section>
+
+          <!-- Sub-slide C: Drum machine patch -->
+          <section>
+            <h2>Example patch: browser drum machine</h2>
+            <div class="patch-label">Kick:</div>
+            <div class="patch-diagram">
+              <div class="patch-node pn-ctrl">Clock<span class="pn-note">120 BPM</span></div>
+              <div class="patch-arrow">→</div>
+              <div class="patch-node pn-ctrl">Sequencer<span class="pn-note">step pattern</span></div>
+              <div class="patch-arrow">→</div>
+              <div class="patch-node pn-src">Oscillator<span class="pn-note">sine · pitched down</span></div>
+              <div class="patch-arrow">→</div>
+              <div class="patch-node pn-fx">Gain (ADSR)<span class="pn-note">punchy attack</span></div>
+              <div class="patch-arrow">→</div>
+              <div class="patch-node pn-out">Master Out</div>
+            </div>
+            <div class="patch-label">Snare / Hi-hat:</div>
+            <div class="patch-diagram">
+              <div class="patch-node pn-ctrl">Sequencer<span class="pn-note">offset pattern</span></div>
+              <div class="patch-arrow">→</div>
+              <div class="patch-node pn-src">Noise<span class="pn-note">white / pink</span></div>
+              <div class="patch-arrow">→</div>
+              <div class="patch-node pn-fx">Biquad Filter<span class="pn-note">HP for hat · BP for snare</span></div>
+              <div class="patch-arrow">→</div>
+              <div class="patch-node pn-fx">Gain (ADSR)<span class="pn-note">short decay</span></div>
+              <div class="patch-arrow">→</div>
+              <div class="patch-node pn-out">Master Out</div>
+            </div>
+            <div class="patch-label">Sample-based variation:</div>
+            <div class="patch-diagram" style="background:#f0fdf4;border-color:#86efac">
+              <div class="patch-node pn-ctrl">Freq Sequencer<span class="pn-note">melodic steps</span></div>
+              <div class="patch-arrow">→</div>
+              <div class="patch-node pn-src">Sample<span class="pn-note">auto-repitch</span></div>
+              <div class="patch-arrow">→</div>
+              <div class="patch-node pn-fx">Reverb</div>
+              <div class="patch-arrow">→</div>
+              <div class="patch-node pn-out">Master Out</div>
+            </div>
+            <aside class="notes">The Noise node has 6 spectral types — white for hats, brown for low rumble, pink for general texture. Each sequencer is an independent step-pattern grid. All clocks share a master BPM. You can live-edit every step while audio plays.</aside>
+          </section>
+
+          <!-- Sub-slide D: Vocoder / advanced patch -->
+          <section>
+            <h2>Example patch: Daft Punk vocoder</h2>
+            <p style="font-size:0.6em;color:var(--muted);margin-bottom:0.15em">
+              Voice → spectral envelope → carrier synthesis → robotic vocal. Classic talk-box in 4 nodes.
+            </p>
+            <div class="patch-diagram">
+              <div class="patch-node pn-midi">Microphone<span class="pn-note">modulator input</span></div>
+              <div class="patch-arrow">→</div>
+              <div class="patch-split">
+                <div style="font-size:0.46em;color:var(--muted);text-align:center;margin-bottom:2px">modulator</div>
+                <div class="patch-node pn-fx" style="min-width:90px">Vocoder<span class="pn-note">32 bands · Q=10</span></div>
+                <div style="font-size:0.46em;color:var(--muted);text-align:center;margin-top:2px">carrier ↑</div>
+              </div>
+              <div class="patch-arrow">→</div>
+              <div class="patch-node pn-out">Master Out</div>
+            </div>
+            <div class="patch-diagram" style="background:#e0f2fe;border-color:#38bdf8;margin-top:6px">
+              <div class="patch-node pn-src">Oscillator<span class="pn-note">sawtooth 440Hz</span></div>
+              <div class="patch-arrow">→</div>
+              <div class="patch-node pn-fx">Gain<span class="pn-note">carrier level</span></div>
+              <div style="font-size:0.5em;color:#075985;align-self:center;margin-left:8px">↑ carrier path — plug into vocoder carrier input</div>
+            </div>
+            <div class="budget-callout" style="margin-top:0.45em;background:#f8f2ff;border-color:#c4b5fd;color:#3b1d6e">
+              Built-in presets: <strong>Classic</strong> (16 bands) · <strong>Robot</strong> (24 bands) · <strong>Speech</strong> (20 bands) · <strong>Daft Punk</strong> (32 bands, Q=10, 80–10 000 Hz).<br>
+              Swap presets live — no rebuild.
+            </div>
+            <aside class="notes">The Vocoder is one of the most impressive demos you can do. Talk normally into the mic while a sawtooth plays — the vocoder will speak in the pitch of the oscillator. Change the oscillator frequency live to change the pitch. Swap presets for different character. All in the browser. No install.</aside>
+          </section>
+
+          <!-- Sub-slide E: What you can build -->
+          <section>
+            <h2>What you can build with Synflow</h2>
+            <div class="usecase-grid">
+              <div class="usecase-card">
+                <span class="usecase-icon">[~]</span>
+                <div class="usecase-title">Live instrument</div>
+                <div class="usecase-desc">MIDI keyboard -&gt; polyphonic oscillator bank -&gt; filter -&gt; reverb -&gt; out. Real-time performance with CC-mapped knobs.</div>
+              </div>
+              <div class="usecase-card">
+                <span class="usecase-icon">(=)</span>
+                <div class="usecase-title">Drum machine</div>
+                <div class="usecase-desc">Step sequencer -&gt; noise + oscillator voices -&gt; per-channel ADSR -&gt; mixer -&gt; master. Edit patterns while audio plays.</div>
+              </div>
+              <div class="usecase-card">
+                <span class="usecase-icon">[^]</span>
+                <div class="usecase-title">Vocoder / talk-box</div>
+                <div class="usecase-desc">Mic -&gt; vocoder &lt;- sawtooth carrier. Daft Punk, talk-box, or speech intelligibility demos in 4 nodes.</div>
+              </div>
+              <div class="usecase-card">
+                <span class="usecase-icon">(|)</span>
+                <div class="usecase-title">Audio processor</div>
+                <div class="usecase-desc">Mic -&gt; EQ -&gt; compressor -&gt; distortion -&gt; reverb -&gt; recording. Pod­cast chain or guitar amp sim in the browser.</div>
+              </div>
+              <div class="usecase-card">
+                <span class="usecase-icon">~#~</span>
+                <div class="usecase-title">Generative music</div>
+                <div class="usecase-desc">Clock -&gt; arpeggiator -&gt; frequency sequencer -&gt; sample engine -&gt; spatial reverb. Endless evolving patterns, no code.</div>
+              </div>
+              <div class="usecase-card">
+                <span class="usecase-icon">[dsp]</span>
+                <div class="usecase-title">DSP experiments</div>
+                <div class="usecase-desc">Write custom AudioWorklet code in the Function node. Prototype a new filter, oscillator, or effect -- hot-reload, hear result instantly.</div>
+              </div>
+            </div>
+            <aside class="notes">Pick one or two of these to demo live if time allows. The drum machine and vocoder are the most visually impressive for an audience that hasn't seen Synflow before. For audio-DSP people, the AudioWorklet custom node is the killer feature.</aside>
+          </section>
+
+        </section>
+        <!-- ═══ END SYNFLOW CAPABILITIES ═════════════════════════════ -->
+
+        <!-- Slide 2: Talk overview -->
+        <section>
+          <h2>Overview (18:00)</h2>
+          <div class="overview-grid">
+            <div class="overview-item">
+              <span class="time">00:00–01:30</span>
+              <span class="topic">Why browser-based modular audio now?</span>
+            </div>
+            <div class="overview-item">
+              <span class="time">01:30–03:30</span>
+              <span class="topic">What is Synflow: goals, audience, workflow</span>
+            </div>
+            <div class="overview-item">
+              <span class="time">03:30–06:00</span>
+              <span class="topic">Architecture at a glance: React + XYFlow + EventBus + Web Audio</span>
+            </div>
+            <div class="overview-item">
+              <span class="time">06:00–08:30</span>
+              <span class="topic">Registry deep dive: how nodes are documented and previewed</span>
+            </div>
+            <div class="overview-item">
+              <span class="time">08:30–11:30</span>
+              <span class="topic">Node families: sources, processors, modulation, routing, utilities</span>
+            </div>
+            <div class="overview-item">
+              <span class="time">11:30–14:00</span>
+              <span class="topic">Live patch thinking: from MIDI input to playable voice</span>
+            </div>
+            <div class="overview-item">
+              <span class="time">14:00–16:00</span>
+              <span class="topic">Local-first storage and practical browser constraints</span>
+            </div>
+            <div class="overview-item">
+              <span class="time">16:00–17:20</span>
+              <span class="topic">Advanced features: sample engine, worklets, vocoder, event transforms</span>
+            </div>
+            <div class="overview-item">
+              <span class="time">17:20–18:00</span>
+              <span class="topic">Wrap-up + transition to demo/Q&A</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Slide 3: Audio demo reference (sound design) -->
+        <section>
+          <h2>Sound demos</h2>
+          <p class="meta" style="font-size:0.6em;color:#667085;margin-bottom:0.8em;">
+            Drop your <code>.mp3</code> / <code>.wav</code> files into an <code>audio/</code> folder next to
+            <code>index.html</code> and update the <code>src</code> attributes below.
+            During projection: click ▶ to play inline. For the PDF handout print with
+            <code>?print-pdf</code> in the URL — audio elements are replaced by a text note automatically.
+          </p>
+
+          <!-- Audio widget: player (live) + QR code (PDF handout)
+               Replace the src attributes with your actual audio URLs.
+               Replace the QR data= attributes with the same URLs
+               (the QR image is generated on-the-fly by api.qrserver.com). -->
+
+          <div class="audio-widget">
+            <div style="flex:1">
+              <div class="audio-label">Basic patch: MIDI → ADSR → Oscillator → Gain → Master Out</div>
+              <div class="audio-desc">Simple sawtooth voice triggered by MIDI keyboard</div>
+              <audio controls src="audio/patch-basic.mp3" style="margin-top:8px;width:100%;">
+                Your browser does not support the audio element.
+              </audio>
+            </div>
+            <div class="audio-qr">
+              <img
+                src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=audio/patch-basic.mp3"
+                alt="QR code for patch-basic audio"
+              />
+              <span class="qr-label">Scan to listen</span>
+            </div>
+          </div>
+
+          <div class="audio-widget">
+            <div style="flex:1">
+              <div class="audio-label">Sample player: multi-segment drum hit</div>
+              <div class="audio-desc">Four segments triggered independently by the Sequencer node</div>
+              <audio controls src="audio/patch-sampler.mp3" style="margin-top:8px;width:100%;">
+                Your browser does not support the audio element.
+              </audio>
+            </div>
+            <div class="audio-qr">
+              <img
+                src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=audio/patch-sampler.mp3"
+                alt="QR code for patch-sampler audio"
+              />
+              <span class="qr-label">Scan to listen</span>
+            </div>
+          </div>
+
+          <div class="audio-widget">
+            <div style="flex:1">
+              <div class="audio-label">Vocoder: voice modulator + saw carrier</div>
+              <div class="audio-desc">Classic 16-band vocoder preset, Daft Punk style</div>
+              <audio controls src="audio/patch-vocoder.mp3" style="margin-top:8px;width:100%;">
+                Your browser does not support the audio element.
+              </audio>
+            </div>
+            <div class="audio-qr">
+              <img
+                src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=audio/patch-vocoder.mp3"
+                alt="QR code for patch-vocoder audio"
+              />
+              <span class="qr-label">Scan to listen</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- ═══ PERFORMANCE SECTION ══════════════════════════════ -->
+
+        <!-- Slide: Web Audio two-tier model -->
+        <section>
+          <h2>Web Audio API: Two-tier performance model</h2>
+          <div class="perf-tier-grid">
+            <div class="tier tier-cpp">
+              <div class="tier-label">Tier 1 · Browser engine (C++)</div>
+              <div class="tier-title">Built-in Audio Nodes</div>
+              <ul>
+                <li>OscillatorNode · BiquadFilterNode</li>
+                <li>GainNode · DelayNode · ConvolverNode</li>
+                <li>DynamicsCompressorNode · AnalyserNode</li>
+              </ul>
+              <span class="tier-tag">Compiled · SIMD-accelerated · near-zero overhead</span>
+            </div>
+            <div class="tier tier-js">
+              <div class="tier-label">Tier 2 · V8 JIT (JavaScript)</div>
+              <div class="tier-title">AudioWorklet Processor</div>
+              <ul>
+                <li>Custom DSP code you write in JavaScript</li>
+                <li>Runs inside <code>process(inputs, outputs)</code></li>
+                <li>Synflow: Noise, AudioWorklet Oscillator…</li>
+              </ul>
+              <span class="tier-tag">Dedicated thread · JIT compiled · no GC inside process()</span>
+            </div>
+          </div>
+          <div class="budget-callout">
+            [t:] Render quantum: <strong>128 samples</strong> @ 44 100 Hz
+            = <strong>2.902 ms</strong> hard budget per block -- miss it and you get an audible glitch.
+          </div>
+          <aside class="notes">Synflow uses BOTH tiers: Oscillator, Filter, Gain hit the C++ tier for free. Only truly custom DSP (noise types, worklet oscillators) drops to JS. This is a deliberate architectural choice.</aside>
+        </section>
+
+        <!-- Slide: JS vs C++ comparison -->
+        <section>
+          <h2>AudioWorklet JS vs native C++: the gap</h2>
+          <table class="perf-table">
+            <thead>
+              <tr>
+                <th>Property</th>
+                <th>Native C++ (VST / AU plugin)</th>
+                <th>AudioWorklet (JavaScript)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Execution</td>
+                <td class="cell-cpp">Compiled machine code</td>
+                <td class="cell-js">V8 JIT — near-native for hot loops</td>
+              </tr>
+              <tr>
+                <td>SIMD</td>
+                <td class="cell-cpp">SSE4 / AVX2 — 4–8 floats per instruction</td>
+                <td class="cell-warn">WASM SIMD possible; plain JS: scalar only</td>
+              </tr>
+              <tr>
+                <td>Memory / GC</td>
+                <td class="cell-cpp">Manual heap, zero GC pauses</td>
+                <td class="cell-js">GC won't fire inside process() if you avoid allocations</td>
+              </tr>
+              <tr>
+                <td>Thread priority</td>
+                <td class="cell-cpp">OS real-time audio thread</td>
+                <td class="cell-js">High-priority worklet thread (not hard real-time)</td>
+              </tr>
+              <tr>
+                <td>Overhead vs C++</td>
+                <td class="cell-good">1× (baseline)</td>
+                <td class="cell-warn">~10–40× slower for math-heavy DSP</td>
+              </tr>
+              <tr>
+                <td>Polyphony (sine osc)</td>
+                <td class="cell-good">1 000+ voices easily</td>
+                <td class="cell-js">~50–150 voices on modern hardware</td>
+              </tr>
+              <tr>
+                <td>Install / deploy</td>
+                <td class="cell-warn">Platform binary, DAW plugin format</td>
+                <td class="cell-good">Zero install — runs in any browser tab</td>
+              </tr>
+            </tbody>
+          </table>
+          <aside class="notes">The 10-40x gap sounds scary but only matters for very dense polyphony. For prototyping, live performance and most use-cases it's irrelevant — and Synflow's built-in nodes use the free C++ tier anyway.</aside>
+        </section>
+
+        <!-- ═══ BENCHMARK: 3-slide vertical group ══════════════════════ -->
+        <section>
+
+          <!-- Sub-slide 1: Oscillator type overview -->
+          <section>
+            <h2>Four ways to generate audio in the browser</h2>
+            <table class="perf-table">
+              <thead>
+                <tr>
+                  <th>#</th><th>Type</th><th>Where it runs</th><th>Typical use in Synflow</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="font-weight:800;color:#1e293b">1</td>
+                  <td><strong>Native OscillatorNode</strong></td>
+                  <td class="cell-good">C++ audio thread · zero JS overhead</td>
+                  <td>Oscillator node → OscillatorNode free tier</td>
+                </tr>
+                <tr>
+                  <td style="font-weight:800;color:#1e293b">2</td>
+                  <td><strong>C++ / native plugin</strong></td>
+                  <td class="cell-cpp">OS real-time thread · SIMD</td>
+                  <td>VST · AU · LV2 — desktop DAWs only</td>
+                </tr>
+                <tr>
+                  <td style="font-weight:800;color:#334155">3</td>
+                  <td><strong>WASM AudioWorklet</strong></td>
+                  <td style="color:#334155;font-weight:700">Worklet thread · JIT to machine code · no GC</td>
+                  <td>SIMD-like DSP in browser</td>
+                </tr>
+                <tr>
+                  <td style="font-weight:800;color:#475569">4</td>
+                  <td><strong>JS Math.sin() AudioWorklet</strong></td>
+                  <td class="cell-warn">Worklet thread · V8 JIT · transcendental per sample</td>
+                  <td>Naive baseline — avoid for high voice counts</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="budget-callout" style="margin-top:0.5em">
+              [t:] Render quantum: <strong>128 samples</strong> @ 44 100 Hz = <strong>2.902 ms budget</strong>.
+              Miss it = audio dropout. Every row in the chart must stay left of the threshold line.
+            </div>
+            <aside class="notes">Frame this clearly: the C++ tier (rows 1&2) is essentially free. Rows 3-5 are all JavaScript-land and share ONE worklet thread. The benchmark on the next slide shows real numbers from this machine.</aside>
+          </section>
+
+          <!-- Sub-slide 2: Per-type bar chart -->
+          <section>
+            <h2>Benchmark results — Apple M4 Pro</h2>
+            <div id="bench-proc" class="proc-card">Loading data… run <strong>node benchmark/run.js</strong> first.</div>
+            <div class="bench-container" style="margin-top:0.3em">
+              <div id="bench-chart"></div>
+              <div class="bench-legend" style="margin-top:6px">
+                <div class="bench-legend-item"><div class="bench-dot" style="background:#374151"></div> AudioWorklet JS (Math.sin) — underruns at <strong>1 000 voices</strong></div>
+                <div class="bench-legend-item"><div class="bench-dot" style="background:#64748b"></div> WebAssembly (mul-acc DSP) — <strong>no underrun</strong> in tested range</div>
+                <div class="bench-legend-item"><div class="bench-dot" style="background:#1e293b"></div> C++ sinf — underruns at <strong>20 000 voices</strong></div>
+                <div class="bench-legend-item"><div class="bench-dot" style="background:#334155"></div> C++ Wavetable — <strong>no underrun</strong> in tested range</div>
+                <div class="bench-legend-item"><div class="bench-dot" style="background:#475569"></div> C++ NEON SIMD — <strong>no underrun</strong> in tested range</div>
+                <div class="bench-legend-item"><div class="bench-dot" style="background:#94a3b8"></div> 2.902 ms budget line</div>
+              </div>
+            </div>
+            <aside class="notes">Key numbers from real measured data: AudioWorklet JS (Math.sin) underruns at 1,000 voices. WebAssembly mul-acc DSP stays within budget across the entire tested range. C++ sinf underruns at 20,000 voices; C++ Wavetable and NEON SIMD never underrun up to 50,000 voices. C++ can use wavetables too — that's exactly why a JS wavetable series would be misleading to compare.</aside>
+          </section>
+
+          <!-- Sub-slide 3: Underrun summary table -->
+          <section>
+            <h2>Underrun threshold: when glitches start</h2>
+            <div id="bench-proc-2" class="proc-card">Loading…</div>
+            <div class="bench-container" style="margin-top:0.35em;padding:0">
+              <div id="bench-underrun"></div>
+            </div>
+            <div class="budget-callout" style="margin-top:0.5em;background:#f0fff4;border-color:#4ade80;color:#14532d">
+              (*) Each series stops at the first underrun -- no wasted measurement time.
+              On lower-end hardware these thresholds shift dramatically to the left.
+              WebAssembly and C++ give you the most headroom inside the browser sandbox.
+            </div>
+            <aside class="notes">For Synflow specifically: built-in Oscillator nodes use the C++ tier (essentially free), so you'd need thousands of simultaneous voices before hitting budget. AudioWorklet nodes (noise generator, custom worklet osc) use the JS/WASM tier — that's where budget matters.</aside>
+          </section>
+
+        </section>
+        <!-- ═══ END BENCHMARK GROUP ════════════════════════════════════ -->
+
+        <!-- Slide: Multithreading -->
+        <section>
+          <h2>Multithreading: browser vs native DAW</h2>
+          <div class="thread-diagram">
+            <div class="thread-section">
+              <div class="thread-section-title">Web Audio API (Chrome / Firefox)</div>
+              <div class="thread-block thread-main">
+                <strong>Main thread · 1 core</strong>
+                <span>React UI · XYFlow graph · param updates · EventBus</span>
+              </div>
+              <div class="thread-arrow">↓  AudioContext bridge</div>
+              <div class="thread-block thread-audio">
+                <strong>Audio rendering thread · C++ · 1 core</strong>
+                <span>OscillatorNode · BiquadFilter · Gain · Delay · Convolver…</span>
+              </div>
+              <div class="thread-arrow">↓  nested</div>
+              <div class="thread-block thread-worklet">
+                <strong>AudioWorklet thread · JS · 1 core (shared)</strong>
+                <span>All custom processors compete for this single thread</span>
+              </div>
+              <div style="font-size:0.5em;color:#64748b;padding:6px 12px 8px;">/!\ No cross-worklet parallelism -- more AudioWorklet nodes all share one thread.</div>
+            </div>
+            <div class="thread-section">
+              <div class="thread-section-title native">Native DAW (Ableton · Logic · Pro Tools)</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px;">
+                <div class="thread-block thread-core"><strong>Core 0</strong><span>Synth chain A · Bus FX</span></div>
+                <div class="thread-block thread-core"><strong>Core 1</strong><span>Synth chain B · EQ</span></div>
+                <div class="thread-block thread-core"><strong>Core 2</strong><span>Drum bus · Compressor</span></div>
+                <div class="thread-block thread-core"><strong>Core N</strong><span>Master bus · Limiter</span></div>
+              </div>
+              <div style="font-size:0.5em;padding:4px 12px;color:var(--muted);">Task graph scheduler assigns plugin chains to cores dynamically each render cycle.</div>
+              <div style="font-size:0.5em;padding:4px 12px 8px;color:#1e293b;font-weight:700;">[+] True multi-core parallelism. Each plugin is typically single-threaded internally -- but many chains run simultaneously across all cores.</div>
+            </div>
+          </div>
+          <aside class="notes">This is the fundamental architectural difference. Native DAWs scale with CPU core count. Web Audio is pinned to one audio thread — you cannot parallelize across cores. This is a spec limitation, not a Synflow limitation.</aside>
+        </section>
+
+        <!-- Slide: Practical ceiling -->
+        <section>
+          <h2>The practical ceiling for Synflow</h2>
+          <div class="perf-tier-grid">
+            <div class="tier tier-cpp">
+              <div class="tier-label">[+] Built-in Web Audio nodes -- use by default</div>
+              <div class="tier-title">The C++ tier</div>
+              <ul>
+                <li>Oscillator → OscillatorNode (C++ in browser)</li>
+                <li>Biquad Filter, EQ → BiquadFilterNode chains</li>
+                <li>Gain, Delay, Reverb (ConvolverNode), Compressor</li>
+                <li>Per-node overhead: effectively zero</li>
+              </ul>
+              <span class="tier-tag">100+ nodes before hitting real limits</span>
+            </div>
+            <div class="tier tier-js">
+              <div class="tier-label">>> AudioWorklet nodes -- only for custom DSP</div>
+              <div class="tier-title">The JS tier</div>
+              <ul>
+                <li>Noise generator (white, pink, brown, blue, violet, gray)</li>
+                <li>AudioWorklet Oscillator (FM sync, custom waveforms)</li>
+                <li>Mic bypass, recording passthrough</li>
+                <li>Budget: ~50–150 concurrent worklet voices on modern hardware</li>
+              </ul>
+              <span class="tier-tag">Profile in DevTools → Performance panel</span>
+            </div>
+          </div>
+          <div class="budget-callout" style="background:#f0fff4;border-color:#4ade80;color:#14532d;">
+            (*) Synflow deliberately routes standard signal paths through the C++ tier.
+            AudioWorklet is reserved for DSP the Web Audio spec doesn't cover natively --
+            so a patch with 20 oscillators, 4 filters, reverb, EQ and a compressor runs fine in a browser tab.
+          </div>
+          <aside class="notes">Close the performance topic positively: the browser is genuinely capable for modular synthesis at musical complexity. The ceiling only matters if you're building something absurdly polyphonic.</aside>
+        </section>
+
+        <!-- ═══ END PERFORMANCE SECTION ═══════════════════════════ -->
+
+        <!-- Slide: Wrap-up -->
+        <section>
+          <h2>Wrap-up</h2>
+          <div class="perf-tier-grid" style="margin-top:0.5em">
+            <div class="tier tier-cpp">
+              <div class="tier-label">{www} Try it</div>
+              <div class="tier-title" style="font-size:1.1em">synflow.org</div>
+              <ul>
+                <li>No login · no install · runs in any browser tab</li>
+                <li>Open the node palette (top-left +) to start patching</li>
+                <li>Every node has a built-in docs &amp; preview panel</li>
+              </ul>
+            </div>
+            <div class="tier tier-js">
+              <div class="tier-label">[>_] Source</div>
+              <div class="tier-title" style="font-size:1.1em">github.com/k1ln/synflow</div>
+              <ul>
+                <li>MIT license · contributions welcome</li>
+                <li>React + XYFlow + Web Audio API + EventBus</li>
+                <li>35+ nodes: sources, effects, sequencers, logic</li>
+                <li>AudioWorklet + optional WASM for custom DSP</li>
+              </ul>
+            </div>
+          </div>
+          <aside class="notes">End positively. Invite people to open synflow.org on their phones during Q&A. The most convincing demo is them doing it themselves.</aside>
+        </section>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+    <script>
+      // ── Benchmark renderer v3 ──────────────────────────────────────
+      // Reads window.BENCH_DATA produced by: node benchmark/run.js
+      // Series: audioWorkletJS · wasm · cppNative · cppWavetable · cppNeon
+      // Each series stops at first underrun — table shows per-series summary.
+      function renderBench() {
+        var data    = window.BENCH_DATA;
+        var NO_DATA = 'No benchmark data — run: <strong>node benchmark/run.js</strong> then reload.';
+
+        // Proc cards
+        ['bench-proc','bench-proc-2'].forEach(function(id) {
+          var el = document.getElementById(id);
+          if (!el) return;
+          if (!data) { el.innerHTML = '<span class="proc-no-data">' + NO_DATA + '</span>'; return; }
+          var ghz = (data.processor.speedMHz / 1000).toFixed(2);
+          var ts  = new Date(data.timestamp).toLocaleString();
+          el.innerHTML = '<strong>' + data.processor.model + '</strong>' +
+            ' &nbsp;| ' + data.processor.cores + ' cores' +
+            ' | ~' + ghz + ' GHz | ' + data.arch +
+            ' | Node ' + data.nodeVersion +
+            '<span class="proc-meta"> &middot; ' + ts + '</span>';
+        });
+
+        if (!data) {
+          ['bench-chart','bench-underrun'].forEach(function(id){
+            var el = document.getElementById(id); if (el) el.innerHTML = '';
+          });
+          return;
+        }
+
+        // ── Series definitions ────────────────────────────────────────
+        var TYPES = [
+          { key:'audioWorkletJS', label:'AudioWorklet JS  (Math.sin per voice)',    color:'#374151' },
+          { key:'wasm',           label:'WebAssembly in AudioWorklet (mul-acc DSP)', color:'#64748b' },
+          { key:'cppNative',      label:'C++ native sinf  (-O3 -march=native)',      color:'#1e293b' },
+          { key:'cppWavetable',   label:'C++ Wavetable    (-O3 -march=native)',      color:'#334155' },
+          { key:'cppNeon',        label:'C++ NEON SIMD    (-O3 -march=native)',      color:'#475569' },
+        ];
+
+        // ── Bar chart ─────────────────────────────────────────────────
+        var CHART_PX = 400;
+        var allMs = [];
+        TYPES.forEach(function(t) {
+          (data.results[t.key] || []).forEach(function(r) { if (r && r.ms != null) allMs.push(r.ms); });
+        });
+        var maxMs = allMs.reduce(function(a, v) { return Math.max(a, v); }, data.budgetMs);
+        var scale  = Math.max(data.budgetMs * 2.6, maxMs * 1.15);
+        var budPx  = Math.round((data.budgetMs / scale) * CHART_PX);
+
+        var html = '';
+        TYPES.forEach(function(t) {
+          var rows = data.results[t.key];
+          if (!rows || !rows.length) return;
+          html += '<div style="margin-bottom:8px">' +
+            '<div style="font-size:0.54em;font-weight:800;color:' + t.color + ';margin-bottom:2px">' + t.label + '</div>';
+          rows.forEach(function(r) {
+            if (!r || r.ms == null) return;
+            var w   = Math.min(Math.round((r.ms / scale) * CHART_PX), CHART_PX);
+            var col = (r.ms > data.budgetMs) ? '#1e293b' : t.color;
+            html += '<div class="bench-row" style="margin-bottom:1px">' +
+              '<div class="bench-label" style="width:52px">' + r.voices + 'v</div>' +
+              '<div style="flex:1">' +
+                '<div class="bench-bar-wrap" style="width:' + CHART_PX + 'px">' +
+                  '<div class="bench-budget-line" style="left:' + budPx + 'px"></div>' +
+                  '<div class="bench-bar" style="width:' + w + 'px;background:' + col + '"></div>' +
+                '</div>' +
+              '</div>' +
+              '<div class="bench-val" style="width:140px">' +
+                r.ms.toFixed(3) + ' ms' +
+                (r.ms > data.budgetMs ? ' <span style="color:#1e293b">⚠</span>' : '') +
+              '</div>' +
+            '</div>';
+          });
+          html += '</div>';
+        });
+        html += '<div style="font-size:0.44em;color:#64748b;margin-top:4px">' +
+          '┤ = ' + data.budgetMs.toFixed(4) + ' ms budget &middot; each series stops at first underrun</div>';
+
+        var chartEl = document.getElementById('bench-chart');
+        if (chartEl) chartEl.innerHTML = html;
+
+        // ── Underrun summary table (one row per series) ───────────────
+        var flag = function(over, ms) {
+          if (!over && ms != null) return { text: '[+] OK',    bg: '#f1f5f9', col: '#1e293b' };
+          if (ms == null)          return { text: 'N/A',       bg: '#f0f0f0', col: '#888'    };
+          if (ms > data.budgetMs * 2) return { text: '[!!] OVER', bg: '#e2e8f0', col: '#0f172a' };
+          return                          { text: '/!\ DROP',  bg: '#e8e8e0', col: '#374151' };
+        };
+
+        var tbl = '<table class="perf-table" style="font-size:0.52em"><thead><tr>' +
+          '<th>Series</th><th>Max OK voices</th><th>First underrun</th><th>Status</th>' +
+          '</tr></thead><tbody>';
+
+        TYPES.forEach(function(t) {
+          var rows = data.results[t.key];
+          if (!rows || !rows.length) return;
+          var lastOk    = null;
+          var firstOver = null;
+          rows.forEach(function(r) {
+            if (!r || r.ms == null) return;
+            if (!r.over) lastOk = r;
+            else if (!firstOver) firstOver = r;
+          });
+          var f = flag(!!firstOver, firstOver ? firstOver.ms : (lastOk ? lastOk.ms : null));
+          tbl += '<tr>' +
+            '<td style="font-weight:800;color:' + t.color + '">' + t.label + '</td>' +
+            '<td style="text-align:center;font-weight:700">' + (lastOk ? lastOk.voices : '—') + '</td>' +
+            '<td style="text-align:center">' + (firstOver
+              ? firstOver.voices + ' v &nbsp;(' + firstOver.ms.toFixed(3) + ' ms)'
+              : 'none in tested range') + '</td>' +
+            '<td style="background:' + f.bg + ';color:' + f.col + ';font-weight:700;text-align:center">' + f.text + '</td>' +
+            '</tr>';
+        });
+        tbl += '<tr>' +
+          '<td style="font-weight:800;color:#1e293b">Native OscillatorNode (C++ tier)</td>' +
+          '<td style="text-align:center;font-weight:700">&infin;</td>' +
+          '<td style="text-align:center">C++ free tier -- no JS involved</td>' +
+          '<td style="background:#f1f5f9;color:#1e293b;font-weight:700;text-align:center">[+] FREE</td>' +
+          '</tr>';
+        tbl += '</tbody></table>';
+
+        var urEl = document.getElementById('bench-underrun');
+        if (urEl) urEl.innerHTML = tbl;
+      }
+
+      document.addEventListener('DOMContentLoaded', renderBench);
+      // ─────────────────────────────────────────────────────────────
+
+      // ── PDF export ──────────────────────────────────────────────
+      // Append ?print-pdf to the URL, then Cmd/Ctrl+P → Save as PDF
+      // (use Chrome / Edge for best results; one slide per page)
+      // ────────────────────────────────────────────────────────────
+      Reveal.initialize({
+        hash: true,
+        center: true,
+        controls: true,
+        progress: true,
+        transition: 'slide',
+        backgroundTransition: 'fade',
+        margin: 0.04,
+        width: 1600,
+        height: 900,
+        plugins: [RevealNotes, RevealHighlight],
+      });
+    </script>
+  </body>
+</html>

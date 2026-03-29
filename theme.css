@@ -1,0 +1,941 @@
+:root {
+  --bg: #f7f9fc;
+  --ink: #0f172a;
+  --muted: #475569;
+  --accent: #334155;
+  --accent-2: #0f172a;
+  --card: #ffffff;
+  --line: #cbd5e1;
+}‚
+
+.reveal {
+  font-family: "Inter", "Avenir Next", "Segoe UI", Roboto, sans-serif;
+  color: var(--ink);
+}
+
+.reveal .slides {
+  text-align: left;
+}
+
+.reveal .slides section {
+  padding: 10px 28px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.reveal h1,
+.reveal h2,
+.reveal h3 {
+  text-transform: none;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  margin-bottom: 0.28em;
+  color: var(--ink);
+}
+
+.reveal h1 {
+  font-size: 1.95em;
+}
+
+.reveal h2 {
+  font-size: 1.3em;
+  margin-bottom: 0.18em;
+}
+
+.reveal p,
+.reveal li {
+  font-size: 0.78em;
+  line-height: 1.3;
+}
+
+.hero-pill {
+  display: inline-block;
+  font-family: 'Courier New', 'Consolas', 'Lucida Console', monospace;
+  font-size: 0.62em;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.2;
+  white-space: pre;
+  color: #fff;
+  background: #0d0d0d;
+  padding: 0.7em 1.0em;
+  border-radius: 10px;
+  margin-bottom: 0.55em;
+}
+
+.subtitle {
+  margin-top: 0.35em;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.meta {
+  margin-top: 0.9em;
+  color: #667085;
+  font-size: 0.56em;
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 0.4em;
+}
+
+.overview-item {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 10px;
+  align-items: baseline;
+  border: 1px solid var(--line);
+  border-left: 6px solid var(--accent);
+  border-radius: 8px;
+  background: var(--card);
+  padding: 8px 12px;
+}
+
+.time {
+  font-weight: 800;
+  color: #1e293b;
+  font-size: 0.75em;
+}
+
+.topic {
+  font-weight: 600;
+  font-size: 0.72em;
+  color: #111827;
+}
+
+.big-list {
+  margin-top: 0.6em;
+}
+
+.big-list li {
+  margin-bottom: 0.45em;
+  font-size: 0.78em;
+}
+
+/* ── Audio player widget ─────────────────────────────────────── */
+.audio-widget {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-left: 6px solid var(--accent-2);
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin-top: 0.6em;
+}
+
+.audio-widget .audio-label {
+  font-weight: 700;
+  font-size: 0.72em;
+  color: var(--ink);
+  min-width: 200px;
+}
+
+.audio-widget audio {
+  flex: 1;
+  height: 36px;
+  border-radius: 6px;
+  accent-color: var(--accent-2);
+}
+
+.audio-widget .audio-desc {
+  font-size: 0.6em;
+  color: var(--muted);
+}
+
+/* QR code column inside audio widget */
+.audio-qr {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.audio-qr img {
+  width: 80px;
+  height: 80px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: #fff;
+}
+
+.audio-qr .qr-label {
+  font-size: 0.48em;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* In print: hide the <audio> player, keep the QR code */
+@media print {
+  .audio-widget audio {
+    display: none !important;
+  }
+  .audio-widget::after {
+    content: none !important; /* suppress old rule */
+  }
+}
+
+/* ── Print / PDF export ──────────────────────────────────────── */
+/* Two options:
+   1. LIVE:  open index.html in browser – audio plays inline
+   2. PDF:   append ?print-pdf to URL → Cmd/Ctrl+P → Save as PDF
+             Audio player hidden; QR codes stay visible so
+             the audience can scan to listen on their phones.
+*/
+
+/* ── SF corner logo (fixed on every slide) ───────────────────── */
+.sf-corner {
+  position: fixed;
+  top: 16px;
+  left: 18px;
+  z-index: 9999;
+  background: #0d0d0d;
+  color: #ffffff;
+  font-family: 'Courier New', 'Consolas', 'Lucida Console', monospace;
+  font-size: 0.48em;
+  font-weight: 400;
+  line-height: 1.15;
+  white-space: pre;
+  padding: 6px 10px;
+  border-radius: 6px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.perf-tier-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin: 0.5em 0;
+}
+
+.tier {
+  border-radius: 10px;
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+}
+
+.tier-cpp { border-left: 6px solid #334155; background: #f1f5f9; }
+.tier-js  { border-left: 6px solid #475569; background: #f8fafc; }
+
+.tier-label {
+  font-size: 0.52em;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.tier-title {
+  font-size: 0.85em;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.tier-cpp .tier-title { color: #1e293b; }
+.tier-js  .tier-title { color: #334155; }
+
+.tier ul {
+  font-size: 0.62em;
+  margin: 0 0 10px 0;
+  padding-left: 1.2em;
+}
+
+.tier-tag {
+  font-size: 0.52em;
+  font-weight: 700;
+  color: var(--muted);
+  background: rgba(0,0,0,0.06);
+  padding: 4px 8px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.budget-callout {
+  margin-top: 0.4em;
+  font-size: 0.62em;
+  background: #fff8e1;
+  border: 1px solid #f0c040;
+  border-left: 5px solid #f0c040;
+  border-radius: 8px;
+  padding: 7px 14px;
+  color: #4a3000;
+}
+
+/* performance comparison table */
+.perf-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.63em;
+  margin-top: 0.5em;
+}
+
+.perf-table th {
+  text-align: left;
+  padding: 5px 10px;
+  border-bottom: 2px solid var(--line);
+  font-weight: 800;
+}
+
+.perf-table td {
+  padding: 4px 10px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+
+.perf-table tr:last-child td { border-bottom: none; }
+.perf-table tr:nth-child(even) td { background: #f7f9fc; }
+
+.cell-cpp  { color: #1e293b; font-weight: 700; }
+.cell-js   { color: #334155; font-weight: 700; }
+.cell-good { color: #1e293b; font-weight: 700; }
+.cell-warn { color: #64748b; font-weight: 700; }
+
+/* benchmark chart */
+.bench-container {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 8px 14px;
+  margin-top: 0.3em;
+}
+
+.bench-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.bench-label {
+  font-size: 0.58em;
+  font-weight: 700;
+  width: 76px;
+  flex-shrink: 0;
+}
+
+.bench-bar-wrap {
+  position: relative;
+  height: 16px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  overflow: visible;
+  margin-bottom: 3px;
+}
+
+.bench-bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.55s ease;
+  min-width: 2px;
+}
+
+.bench-bar-cpp { background: #0b5394; opacity: 0.7; }
+
+.bench-budget-line {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  background: #94a3b8;
+  z-index: 2;
+}
+
+.bench-val {
+  font-size: 0.5em;
+  font-weight: 700;
+  color: var(--muted);
+  width: 108px;
+  flex-shrink: 0;
+  line-height: 1.5;
+}
+
+.bench-legend {
+  display: flex;
+  gap: 14px;
+  font-size: 0.53em;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.bench-legend-item { display: flex; align-items: center; gap: 5px; }
+
+.bench-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+#bench-run-btn {
+  margin-top: 0.4em;
+  padding: 7px 18px;
+  background: linear-gradient(120deg, var(--accent), var(--accent-2));
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.62em;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+#bench-run-btn:hover    { opacity: 0.88; }
+#bench-run-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+#bench-status { font-size: 0.53em; color: var(--muted); margin-left: 10px; }
+
+/* threading diagram */
+.thread-diagram {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 0.35em;
+}
+
+.thread-section {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.thread-section-title {
+  font-size: 0.58em;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 7px 14px;
+  background: #f1f5f9;
+  color: #1e293b;
+  border-bottom: 1px solid var(--line);
+}
+
+.thread-section-title.native { background: #e2e8f0; color: #0f172a; }
+
+.thread-block {
+  margin: 7px;
+  border-radius: 8px;
+  padding: 7px 11px;
+  font-size: 0.56em;
+}
+
+.thread-main    { background: #e2e8f0; border-left: 4px solid #475569; }
+.thread-audio   { background: #cbd5e1; border-left: 4px solid #334155; }
+.thread-worklet { background: #f1f5f9; border-left: 4px solid #64748b; margin-left: 20px; }
+.thread-core    { background: #e2e8f0; border-left: 4px solid #1e293b; }
+
+.thread-block strong { display: block; font-weight: 800; margin-bottom: 2px; }
+.thread-block span   { color: var(--muted); }
+
+.thread-arrow {
+  text-align: center;
+  font-size: 0.52em;
+  color: var(--muted);
+  padding: 1px 0;
+}
+
+/* projector safety */
+@media (max-width: 1400px) {
+  .reveal h1 {
+    font-size: 1.8em;
+  }
+  .reveal h2 {
+    font-size: 1.2em;
+  }
+  .reveal p,
+  .reveal li {
+    font-size: 0.72em;
+  }
+}
+
+/* ── proc-card (benchmark machine info bar) ─────────────────── */
+.proc-card {
+  font-size: 0.55em;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 6px 14px;
+  color: #1e293b;
+  margin-bottom: 0.3em;
+}
+.proc-meta    { color: #6b7280; font-weight: 400; }
+.proc-no-data { color: #dc2626; font-weight: 600; }
+
+/* ── Barrier / motivation slide ─────────────────────────────── */
+.synflow-quote {
+  font-size: 0.7em;
+  font-style: italic;
+  line-height: 1.5;
+  background: #f8fafc;
+  border-left: 5px solid #334155;
+  border-radius: 0 8px 8px 0;
+  padding: 10px 16px;
+  color: #1e293b;
+  margin-bottom: 0.55em;
+}
+.synflow-quote cite {
+  display: block;
+  margin-top: 0.35em;
+  font-size: 0.8em;
+  font-style: normal;
+  color: #475569;
+  font-weight: 700;
+}
+
+.barrier-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.barrier-item {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: var(--card);
+}
+.barrier-name {
+  font-size: 0.62em;
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 3px;
+}
+.barrier-tag {
+  display: inline-block;
+  font-size: 0.5em;
+  background: #e2e8f0;
+  color: #334155;
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.barrier-issue {
+  font-size: 0.52em;
+  color: #b45309;
+  margin-top: 3px;
+  line-height: 1.35;
+}
+
+/* ── Synflow pillars ─────────────────────────────────────────── */
+.synflow-pillars {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 0.45em;
+}
+.pillar {
+  border-radius: 10px;
+  padding: 14px 12px;
+  text-align: center;
+  border: 1px solid var(--line);
+}
+.pillar .pillar-icon {
+  font-family: 'Courier New', 'Consolas', monospace;
+  font-size: 0.95em;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  display: block;
+  margin-bottom: 8px;
+  color: var(--ink);
+  background: #e2e8f0;
+  border-radius: 4px;
+  padding: 3px 8px;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+.pillar .pillar-title {
+  font-size: 0.64em;
+  font-weight: 800;
+  margin-bottom: 4px;
+  color: var(--ink);
+}
+.pillar .pillar-desc {
+  font-size: 0.54em;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+/* ── Node catalog grid ───────────────────────────────────────── */
+.node-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-top: 0.35em;
+}
+.node-category {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.node-cat-title {
+  font-size: 0.52em;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--line);
+}
+.node-cat-title.src  { background:#e2e8f0; color:#1e293b; }
+.node-cat-title.fx   { background:#e8e8e2; color:#374151; }
+.node-cat-title.ctrl { background:#dde2ea; color:#1e293b; }
+.node-cat-title.seq  { background:#e4eae4; color:#1e293b; }
+.node-cat-title.rtg  { background:#e8e2e2; color:#374151; }
+.node-items {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 5px 6px;
+}
+.node-pill {
+  font-size: 0.46em;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #f7f9fc;
+  border: 1px solid #e2e8f0;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Patch diagram ───────────────────────────────────────────── */
+.patch-diagram {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0.4em 0;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 16px;
+}
+.patch-node {
+  border-radius: 7px;
+  padding: 6px 10px;
+  font-size: 0.55em;
+  font-weight: 700;
+  text-align: center;
+  border: 2px solid transparent;
+  min-width: 70px;
+}
+.pn-src  { background:#e0f2fe; border-color:#0ea5e9; color:#075985; }
+.pn-ctrl { background:#ede9fe; border-color:#8b5cf6; color:#4c1d95; }
+.pn-fx   { background:#fef3c7; border-color:#f59e0b; color:#78350f; }
+.pn-out  { background:#dcfce7; border-color:#22c55e; color:#14532d; }
+.pn-midi { background:#fee2e2; border-color:#f87171; color:#7f1d1d; }
+.pn-note { font-size: 0.44em; font-weight:400; color:var(--muted); margin-top:2px; display:block; }
+.patch-arrow {
+  font-size: 1.1em;
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+.patch-split {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.patch-label {
+  font-size: 0.5em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+  margin-top: 0.6em;
+  margin-bottom: 0.15em;
+}
+
+/* ── Use-case grid ───────────────────────────────────────────── */
+.usecase-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 0.4em;
+}
+.usecase-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: var(--card);
+}
+.usecase-icon {
+  font-family: 'Courier New', 'Consolas', monospace;
+  font-size: 0.85em;
+  font-weight: 700;
+  display: inline-block;
+  margin-bottom: 6px;
+  color: var(--ink);
+  background: #e2e8f0;
+  border-radius: 4px;
+  padding: 2px 7px;
+  letter-spacing: 0.04em;
+}
+.usecase-title {
+  font-size: 0.6em;
+  font-weight: 800;
+  margin-bottom: 3px;
+  color: var(--ink);
+}
+.usecase-desc {
+  font-size: 0.52em;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+/* ── Technology stack slide ──────────────────────────────────── */
+.stack-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 0.3em;
+}
+
+.stack-layer {
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--ink);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: var(--card);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.stack-badge {
+  font-family: 'Courier New', 'Consolas', monospace;
+  font-size: 0.62em;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #fff;
+  background: var(--ink);
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  width: fit-content;
+  margin-bottom: 2px;
+}
+
+.stack-name {
+  font-size: 0.78em;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1.1;
+}
+
+.stack-role {
+  font-size: 0.52em;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 3px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 5px;
+}
+
+.stack-points {
+  font-size: 0.52em;
+  color: var(--ink);
+  line-height: 1.45;
+  padding-left: 1.1em;
+  margin: 0;
+  flex: 1;
+}
+
+.stack-points li {
+  margin-bottom: 3px;
+  font-size: 1em;
+}
+
+.stack-tag {
+  font-family: 'Courier New', 'Consolas', monospace;
+  font-size: 0.46em;
+  color: var(--muted);
+  background: #f1f5f9;
+  border-radius: 4px;
+  padding: 3px 7px;
+  margin-top: 4px;
+  letter-spacing: 0.03em;
+}
+
+/* ── Architecture flow diagram ───────────────────────────────── */
+.arch-diagram {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr 1.3fr;
+  gap: 0;
+  align-items: stretch;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  font-size: 0.62em;
+}
+
+.arch-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+}
+
+.arch-col-ui  { background: #f8fafc; border-right: 2px dashed var(--line); }
+.arch-col-agm { background: #f8fafc; }
+
+.arch-col-title {
+  font-family: 'Courier New', 'Consolas', monospace;
+  font-size: 1em;
+  font-weight: 800;
+  color: #fff;
+  background: var(--ink);
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 4px;
+  letter-spacing: 0.07em;
+  width: fit-content;
+  margin-bottom: 1px;
+}
+
+.arch-col-sub {
+  font-size: 0.82em;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 6px;
+  letter-spacing: 0.02em;
+}
+
+.arch-box {
+  padding: 3px 0;
+}
+
+.arch-box-label {
+  font-weight: 700;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+.arch-box-detail {
+  font-size: 0.76em;
+  color: var(--muted);
+  font-family: 'Courier New', 'Consolas', monospace;
+  margin-top: 1px;
+}
+
+/* EventBus wires */
+.arch-col-bus {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 10px;
+  align-items: stretch;
+  background: #f1f5f9;
+  border-right: 2px dashed var(--line);
+}
+
+/* Each wire row: label | arrow — fixed column widths */
+.arch-bus-wire {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+}
+
+.arch-bus-back {
+  grid-template-columns: 1fr 160px;
+}
+
+.arch-bus-msg {
+  font-family: 'Courier New', 'Consolas', monospace;
+  font-size: 0.75em;
+  font-weight: 700;
+  color: var(--ink);
+  background: #e2e8f0;
+  padding: 3px 7px;
+  border-radius: 3px;
+  white-space: nowrap;
+  width: 250px;
+  box-sizing: border-box;
+}
+
+.arch-bus-msg-back {
+  background: #cbd5e1;
+  color: var(--muted);
+}
+
+.arch-bus-arrow {
+  font-family: 'Courier New', 'Consolas', monospace;
+  font-size: 0.82em;
+  color: #64748b;
+  text-align: center;
+  letter-spacing: -1px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.arch-bus-note {
+  margin-top: 6px;
+  font-size: 0.72em;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+/* Web Audio API inner panel */
+.arch-waa {
+  margin-top: 6px;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--ink);
+  border-radius: 6px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.arch-waa-title {
+  font-family: 'Courier New', 'Consolas', monospace;
+  font-size: 0.78em;
+  font-weight: 800;
+  color: #fff;
+  background: var(--ink);
+  padding: 4px 10px;
+  letter-spacing: 0.04em;
+}
+
+.arch-waa-inner {
+  padding: 8px 10px;
+}
+
+.arch-signal-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.arch-node-pill {
+  font-family: 'Courier New', 'Consolas', monospace;
+  font-size: 0.78em;
+  font-weight: 600;
+  background: #e2e8f0;
+  color: var(--ink);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.arch-sig-arrow {
+  font-family: 'Courier New', 'Consolas', monospace;
+  font-size: 0.85em;
+  color: #64748b;
+}
+
+.arch-sig-label {
+  font-size: 0.7em;
+  color: var(--muted);
+  font-style: italic;
+  margin-top: 6px;
+  font-family: 'Courier New', 'Consolas', monospace;
+}
+
